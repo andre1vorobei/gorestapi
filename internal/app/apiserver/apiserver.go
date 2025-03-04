@@ -1,6 +1,7 @@
 package apiserver
 
 import (
+	"gorestapi/internal/app/store"
 	"io"
 	"net/http"
 
@@ -12,6 +13,7 @@ type APIServer struct {
 	config *Config
 	logger *logrus.Logger
 	router *mux.Router
+	store  *store.Store
 }
 
 func New(conf *Config) *APIServer {
@@ -38,6 +40,10 @@ func (s *APIServer) Start() error {
 		return err
 	}
 
+	if err := s.configureStore(); err != nil {
+		return err
+	}
+
 	s.configureRouter()
 
 	s.logger.Info("starting api server")
@@ -47,6 +53,16 @@ func (s *APIServer) Start() error {
 
 func (s *APIServer) configureRouter() {
 	s.router.HandleFunc("/hello", s.handlerHello())
+}
+
+func (s *APIServer) configureStore() error {
+	st := store.New(s.config.Store)
+	if err := st.Open(); err != nil {
+		return err
+	}
+	s.store = st
+
+	return nil
 }
 
 func (s *APIServer) handlerHello() http.HandlerFunc {
