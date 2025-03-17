@@ -1,7 +1,6 @@
 package store_test
 
 import (
-	"fmt"
 	"os"
 	"testing"
 )
@@ -16,8 +15,6 @@ func TestMain(m *testing.M) {
 	if databaseURL == "" {
 		databaseURL = "user=testdb host=localhost password=1234 dbname=test"
 	}
-
-	fmt.Println(databaseURL)
 
 	os.Exit(m.Run())
 
