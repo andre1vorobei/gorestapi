@@ -88,16 +88,18 @@ func (s *APIServer) Start() error {
 		//RootCAs:      caCert,
 		//Certificates: []tls.Certificate{ownCert},
 	}
+	fmt.Println(tlsConfig)
 
 	server := &http.Server{
-		Addr:      s.config.BindAddr,
-		Handler:   corsMiddleware.Handler(s.router),
-		TLSConfig: tlsConfig,
+		Addr:    s.config.BindAddr,
+		Handler: corsMiddleware.Handler(s.router),
+		//TLSConfig: tlsConfig,
 	}
 
 	s.logger.Info("starting api server")
 
-	return server.ListenAndServeTLS("certs/auth.crt", "certs/auth.key")
+	//	return server.ListenAndServeTLS("certs/auth.crt", "certs/auth.key")
+	return server.ListenAndServe()
 }
 
 func (s *APIServer) configureRouter() {
@@ -269,7 +271,7 @@ func (s *APIServer) apiRegister() http.HandlerFunc {
 
 		req, err := http.NewRequest(
 			"POST",
-			"https://127.0.0.1:8081/api/profiles/crprofile",
+			"http://profiles_service:8081/api/profiles/crprofile",
 			bytes.NewBuffer(requestBody),
 		)
 		if err != nil {

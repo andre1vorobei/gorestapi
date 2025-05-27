@@ -3,11 +3,11 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: postgres
+    container_name: postgres_auth
     environment:
-      POSTGRES_USER: fek 
-      POSTGRES_PASSWORD: 1234 
-      POSTGRES_DB: users 
+      POSTGRES_USER: ${DB_USER} 
+      POSTGRES_PASSWORD: ${DB_PASSWORD} 
+      POSTGRES_DB: ${DB_NAME} 
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -27,9 +27,9 @@ services:
     volumes:
       - ./migrations:/flyway/sql  # Папка с миграциями
     environment:
-      FLYWAY_URL: jdbc:postgresql://postgres:5432/users
-      FLYWAY_USER: fek
-      FLYWAY_PASSWORD: 1234
+      FLYWAY_URL: jdbc:postgresql://${DB_URL}:5432/${DB_NAME}
+      FLYWAY_USER: ${DB_USER} 
+      FLYWAY_PASSWORD: ${DB_PASSWORD} 
       FLYWAY_BASELINE_ON_MIGRATE: "true"
     command: migrate
     networks:
@@ -45,6 +45,9 @@ services:
         condition: service_completed_successfully
     networks:
       - my-app-network
+    volumes:
+      - ./.env:/app/.env
+
 
 networks:
   my-app-network:
